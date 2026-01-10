@@ -2,18 +2,18 @@
 
 **GMT 458 Web GIS Final Project**
 
-## 📌 What is This?
+## What is This?
 
 Discover restaurants in Ankara on a map, check-in to earn points, make group decisions with friends!
 
 ### Features
-- 🗺️ Interactive map (filtering, search)
-- 🎯 Gamification (XP, levels, badges)
-- 🏆 Leaderboard
-- 🎮 Food Challenges
-- 👥 Food Squad (group voting)
+- Interactive map (filtering, search)
+- Gamification (XP, levels, badges)
+- Leaderboard
+- Food Challenges
+- Food Squad (group voting)
 
-## 🚀 Installation
+## Installation
 
 ### Requirements
 - Node.js
@@ -43,17 +43,17 @@ npm start
 - Frontend: http://localhost:3000
 - Backend: http://localhost:5000
 
-## 💻 Technologies
+## Technologies
 
 **Backend:** Node.js, Express, PostgreSQL+PostGIS, MongoDB, JWT  
 **Frontend:** React, Leaflet, Axios
 
-## 🗄️ Database
+## Database
 
 **PostgreSQL:** users, restaurants (PostGIS Point)  
 **MongoDB:** reviews, challenges, squads
 
-## 📡 API Examples
+## API Examples
 ```
 POST /api/auth/register          → Register
 POST /api/auth/login             → Login
@@ -63,20 +63,7 @@ GET  /api/challenges             → Challenge list
 POST /api/squads                 → Create group
 ```
 
-## ✅ GMT 458 Requirements
-
-- ✅ GitHub code management (10%)
-- ✅ User types: Free, Premium, Owner, Admin (20%)
-- ✅ Performance monitoring: R-Tree, B-Tree indexes (25%)
-- ✅ CRUD operations (15%)
-- ✅ Authentication: JWT (15%)
-- ✅ NoSQL: MongoDB nested documents (25%)
-- ✅ Performance testing: Load tests (25%)
-- ✅ API development: RESTful (25%)
-- ✅ GeoServer: WMS/WFS (25%)
-- ✅ AWS Hosting (20%)
-
-## 📂 Project Structure
+## Project Structure
 ```
 nerede-yesek/
 ├── backend/        → API (Node.js + Express)
