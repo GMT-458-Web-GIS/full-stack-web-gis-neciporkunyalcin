@@ -1,0 +1,141 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-container {
+  width: 100%;
+  max-width: 500px;
+  animation: fadeIn 0.5s ease;
+}
+
+.login-header {
+  text-align: center;
+  color: white;
+  margin-bottom: 30px;
+}
+
+.login-header h1 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.login-header p {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+.login-box {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.login-tabs {
+  display: flex;
+  background: #f5f5f5;
+}
+
+.tab {
+  flex: 1;
+  padding: 15px;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #666;
+}
+
+.tab.active {
+  background: white;
+  color: #667eea;
+}
+
+.login-form {
+  padding: 30px;
+}
+
+.error-message {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.btn-block {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.login-footer {
+  text-align: center;
+  padding: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.login-footer .link {
+  color: #667eea;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.login-footer .link:hover {
+  text-decoration: underline;
+}
+
+.login-features {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.feature {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.feature:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-5px);
+}
+
+.feature-icon {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.feature h3 {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.feature p {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+@media (max-width: 600px) {
+  .login-header h1 {
+    font-size: 36px;
+  }
+
+  .login-features {
+    grid-template-columns: 1fr;
+  }
+}
