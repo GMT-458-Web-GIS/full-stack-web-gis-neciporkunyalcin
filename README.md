@@ -1,4 +1,4 @@
-# Nerede Yesek? - Social Food Map
+# NEREDE YESEK? - Social Food Map
 
 **GMT 458 Web GIS Final Project**
 
