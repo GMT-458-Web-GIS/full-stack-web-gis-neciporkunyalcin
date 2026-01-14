@@ -9,4 +9,16 @@ export const setAuthToken = (token) => {
   else delete api.defaults.headers.common["Authorization"];
 };
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("ny_token");
+      localStorage.removeItem("ny_user");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;

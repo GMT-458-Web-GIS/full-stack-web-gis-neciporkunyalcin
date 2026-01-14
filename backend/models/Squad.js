@@ -11,12 +11,14 @@ const squadSchema = new mongoose.Schema({
     default: 'casual'
   },
   creator_id: {
-    type: Number,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true
   },
   members: [{
     user_id: {
-      type: Number,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: true
     },
     username: String,
@@ -52,7 +54,7 @@ const squadSchema = new mongoose.Schema({
     started_at: Date,
     decision_deadline: Date,
     suggested_restaurants: [{
-      restaurant_id: Number,
+      restaurant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
       restaurant_name: String,
       location: {
         type: {
@@ -63,15 +65,15 @@ const squadSchema = new mongoose.Schema({
       },
       votes: {
         upvotes: [{
-          user_id: Number,
+          user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
           timestamp: Date
         }],
         downvotes: [{
-          user_id: Number,
+          user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
           timestamp: Date
         }],
         super_likes: [{
-          user_id: Number,
+          user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
           timestamp: Date
         }]
       },
@@ -82,7 +84,7 @@ const squadSchema = new mongoose.Schema({
       avg_distance_to_members: Number
     }],
     final_decision: {
-      restaurant_id: Number,
+      restaurant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
       restaurant_name: String,
       decided_at: Date,
       decision_method: {
@@ -97,7 +99,7 @@ const squadSchema = new mongoose.Schema({
       default: 0
     },
     favorite_restaurant: {
-      restaurant_id: Number,
+      restaurant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
       restaurant_name: String,
       visit_count: Number
     },
@@ -107,10 +109,10 @@ const squadSchema = new mongoose.Schema({
     fastest_decision_time: Number
   },
   meeting_history: [{
-    restaurant_id: Number,
+    restaurant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
     restaurant_name: String,
     date: Date,
-    attendees: [Number], // user IDs
+    attendees: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // user IDs
     decision_time: Number, // minutes
     total_spent: Number
   }]

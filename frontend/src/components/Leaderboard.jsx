@@ -20,34 +20,49 @@ export default function Leaderboard() {
   return (
     <div className="card">
       <div className="cardhd">
-        <h3>LEADERBOARD</h3>
-        <button className="btn" onClick={load}>Refresh</button>
+        <h3>🏆 Leaderboard</h3>
+        <button className="btn" style={{ padding: '4px 10px', fontSize: 12 }} onClick={load}>Refresh</button>
       </div>
-      <div className="cardbd">
-        {msg && <div className="small" style={{ color: "#fca5a5" }}>{msg}</div>}
+      <div className="cardbd" style={{ padding: 0 }}>
+        {msg && <div className="small" style={{ padding: '1rem', color: "#fca5a5" }}>{msg}</div>}
 
-        {rows.slice(0, 10).map((u) => (
-          <div
-            key={u.id}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              padding: "10px 0",
-              borderBottom: "1px solid rgba(255,255,255,.06)"
-            }}
-          >
-            <div>
-              <div style={{ fontWeight: 700 }}>#{u.rank} {u.username}</div>
-              <div className="small">Level {u.level}</div>
-            </div>
-            <div style={{ textAlign: "right" }}>
-              <div style={{ fontWeight: 800, color: "#93c5fd" }}>{u.total_xp} XP</div>
-              <div className="small">progress</div>
-            </div>
-          </div>
-        ))}
+        <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+          {rows.slice(0, 10).map((u, i) => {
+            let rankIcon = `#${u.rank}`;
+            if (u.rank === 1) rankIcon = "🥇";
+            if (u.rank === 2) rankIcon = "🥈";
+            if (u.rank === 3) rankIcon = "🥉";
 
-        {rows.length === 0 && <div className="small">No users yet.</div>}
+            return (
+              <div
+                key={u.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "12px 16px",
+                  borderBottom: "1px solid var(--border)",
+                  transition: 'background 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+              >
+                <div className="row">
+                  <div style={{ width: 24, fontSize: 16, fontWeight: 700, textAlign: 'center' }}>{rankIcon}</div>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: 14 }}>{u.username}</div>
+                    <div className="small" style={{ color: '#94a3b8' }}>Level {u.level}</div>
+                  </div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{ fontWeight: 700, color: "var(--primary)", fontSize: 14 }}>{u.total_xp} XP</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {rows.length === 0 && <div className="small" style={{ padding: '1.5rem', textAlign: 'center' }}>No users yet.</div>}
       </div>
     </div>
   );

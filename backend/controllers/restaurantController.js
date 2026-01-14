@@ -4,12 +4,24 @@ const User = require('../models/User');
 // Get all restaurants
 exports.getAllRestaurants = async (req, res) => {
   try {
-    const restaurants = await Restaurant.getAll();
-    
+    const restaurants = await Restaurant.find().sort({ rating: -1 }).limit(100);
+
+    // Transform data to match previous interface if needed, or leave as is
+    // The previous one returned specific fields.
+    const data = restaurants.map(r => ({
+      id: r._id,
+      name: r.name,
+      cuisine_type: r.cuisine_type,
+      price_range: r.price_range,
+      rating: r.rating,
+      longitude: r.location.coordinates[0],
+      latitude: r.location.coordinates[1]
+    }));
+
     res.status(200).json({
       success: true,
-      count: restaurants.length,
-      data: restaurants
+      count: data.length,
+      data: data
     });
   } catch (error) {
     console.error('Error in getAllRestaurants:', error);
@@ -33,22 +45,42 @@ exports.getNearbyRestaurants = async (req, res) => {
       });
     }
 
-    const filters = {};
-    if (cuisine_type) filters.cuisine_type = cuisine_type;
-    if (price_range) filters.price_range = price_range;
-    if (min_rating) filters.min_rating = parseFloat(min_rating);
+    const query = {
+      location: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: [parseFloat(lon), parseFloat(lat)]
+          },
+          $maxDistance: parseInt(radius)
+        }
+      }
+    };
 
-    const restaurants = await Restaurant.findNearby(
-      parseFloat(lat),
-      parseFloat(lon),
-      parseInt(radius),
-      filters
-    );
+    if (cuisine_type) query.cuisine_type = cuisine_type;
+    if (price_range) query.price_range = price_range;
+    if (min_rating) query.rating = { $gte: parseFloat(min_rating) };
+
+    const restaurants = await Restaurant.find(query);
+
+    const data = restaurants.map(r => ({
+      id: r._id,
+      name: r.name,
+      cuisine_type: r.cuisine_type,
+      price_range: r.price_range,
+      rating: r.rating,
+      total_reviews: r.total_reviews,
+      longitude: r.location.coordinates[0],
+      latitude: r.location.coordinates[1],
+      address: r.address,
+      phone: r.phone
+      // Mongoose $near sorts by distance by default
+    }));
 
     res.status(200).json({
       success: true,
-      count: restaurants.length,
-      data: restaurants
+      count: data.length,
+      data: data
     });
   } catch (error) {
     console.error('Error in getNearbyRestaurants:', error);
@@ -74,7 +106,12 @@ exports.getRestaurant = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: restaurant
+      data: {
+        ...restaurant.toObject(),
+        id: restaurant._id,
+        longitude: restaurant.location.coordinates[0],
+        latitude: restaurant.location.coordinates[1]
+      }
     });
   } catch (error) {
     console.error('Error in getRestaurant:', error);
@@ -99,21 +136,25 @@ exports.createRestaurant = async (req, res) => {
       });
     }
 
-    const restaurantData = {
+    const restaurant = await Restaurant.create({
       name,
       cuisine_type,
       price_range,
-      lat: parseFloat(lat),
-      lon: parseFloat(lon),
+      location: {
+        type: 'Point',
+        coordinates: [parseFloat(lon), parseFloat(lat)]
+      },
       address,
       phone,
-      owner_id: req.user.id // from auth middleware
-    };
-
-    const restaurant = await Restaurant.create(restaurantData);
+      owner: req.user.id
+    });
 
     // Award XP to user for adding restaurant
-    await User.updateXP(req.user.id, 100);
+    const user = await User.findById(req.user.id);
+    if (user) {
+      user.total_xp += 100;
+      await user.save();
+    }
 
     res.status(201).json({
       success: true,
@@ -142,12 +183,29 @@ exports.searchRestaurants = async (req, res) => {
       });
     }
 
-    const restaurants = await Restaurant.search(q);
+    // Simple regex search for name or cuisine
+    const restaurants = await Restaurant.find({
+      $or: [
+        { name: { $regex: q, $options: 'i' } },
+        { cuisine_type: { $regex: q, $options: 'i' } }
+      ]
+    }).limit(20);
+
+    const data = restaurants.map(r => ({
+      id: r._id,
+      name: r.name,
+      cuisine_type: r.cuisine_type,
+      price_range: r.price_range,
+      rating: r.rating,
+      longitude: r.location.coordinates[0],
+      latitude: r.location.coordinates[1],
+      address: r.address
+    }));
 
     res.status(200).json({
       success: true,
-      count: restaurants.length,
-      data: restaurants
+      count: data.length,
+      data: data
     });
   } catch (error) {
     console.error('Error in searchRestaurants:', error);
@@ -181,14 +239,23 @@ exports.checkIn = async (req, res) => {
     }
 
     // Award XP for check-in
-    const updatedUser = await User.updateXP(req.user.id, 10);
+    const user = await User.findById(req.user.id);
+    if (user) {
+      user.total_xp += 10;
+      await user.save();
+    }
 
     res.status(200).json({
       success: true,
       message: 'Check-in successful! +10 XP',
       data: {
         restaurant: restaurant.name,
-        user: updatedUser
+        user: {
+          id: user._id,
+          username: user.username,
+          total_xp: user.total_xp,
+          level: user.level
+        }
       }
     });
   } catch (error) {

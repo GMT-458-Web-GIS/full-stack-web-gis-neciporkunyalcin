@@ -16,7 +16,7 @@ exports.register = async (req, res) => {
     }
 
     // Check if user exists
-    const existingUser = await User.findByEmail(email);
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -38,7 +38,7 @@ exports.register = async (req, res) => {
 
     // Create token
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user._id, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRE }
     );
@@ -47,7 +47,15 @@ exports.register = async (req, res) => {
       success: true,
       message: 'User registered successfully',
       token,
-      data: user
+      data: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        user_type: user.user_type,
+        total_xp: user.total_xp,
+        level: user.level,
+        createdAt: user.createdAt
+      }
     });
   } catch (error) {
     console.error('Error in register:', error);
@@ -72,8 +80,8 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Find user
-    const user = await User.findByEmail(email);
+    // Find user and select password
+    const user = await User.findOne({ email }).select('+password');
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -92,13 +100,13 @@ exports.login = async (req, res) => {
 
     // Create token
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user._id, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRE }
     );
 
     // Remove password from response
-    delete user.password;
+    user.password = undefined;
 
     res.status(200).json({
       success: true,
@@ -154,16 +162,30 @@ exports.updateLocation = async (req, res) => {
       });
     }
 
-    const result = await User.updateLocation(
-      req.user.id,
-      parseFloat(lat),
-      parseFloat(lon)
-    );
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Update location with GeoJSON
+    user.location = {
+      type: 'Point',
+      coordinates: [parseFloat(lon), parseFloat(lat)]
+    };
+
+    await user.save();
 
     res.status(200).json({
       success: true,
       message: 'Location updated successfully',
-      data: result
+      data: {
+        id: user._id,
+        longitude: user.location.coordinates[0],
+        latitude: user.location.coordinates[1]
+      }
     });
   } catch (error) {
     console.error('Error in updateLocation:', error);
@@ -179,12 +201,23 @@ exports.updateLocation = async (req, res) => {
 exports.getLeaderboard = async (req, res) => {
   try {
     const { limit = 50 } = req.query;
-    const leaderboard = await User.getLeaderboard(parseInt(limit));
+
+    // Get top users sorted by XP
+    const leaderboard = await User.find()
+      .sort({ total_xp: -1 })
+      .limit(parseInt(limit))
+      .select('username total_xp level');
+
+    // Add rank manually since we don't have SQL window functions
+    const rankedLeaderboard = leaderboard.map((user, index) => ({
+      ...user.toObject(),
+      rank: index + 1
+    }));
 
     res.status(200).json({
       success: true,
-      count: leaderboard.length,
-      data: leaderboard
+      count: rankedLeaderboard.length,
+      data: rankedLeaderboard
     });
   } catch (error) {
     console.error('Error in getLeaderboard:', error);
@@ -209,14 +242,14 @@ exports.getUserStats = async (req, res) => {
       });
     }
 
-    // Get user's rank
-    const leaderboard = await User.getLeaderboard(10000);
-    const userRank = leaderboard.findIndex(u => u.id === parseInt(userId)) + 1;
+    // Calculate rank
+    const countAbove = await User.countDocuments({ total_xp: { $gt: user.total_xp } });
+    const userRank = countAbove + 1;
 
     res.status(200).json({
       success: true,
       data: {
-        ...user,
+        ...user.toObject(),
         rank: userRank,
         next_level_xp: user.level * 100,
         xp_progress: user.total_xp % 100

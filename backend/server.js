@@ -4,8 +4,8 @@ const cors = require('cors');
 
 dotenv.config();
 
-//const connectMongoDB = require('./config/mongodb');
-const pool = require('./config/database');
+const connectMongoDB = require('./config/mongodb');
+// const pool = require('./config/database');
 
 // Routes
 const authRoutes = require('./routes/auth');
@@ -14,7 +14,7 @@ const userRoutes = require('./routes/users');
 const challengeRoutes = require('./routes/challenges');
 const squadRoutes = require('./routes/squads');
 
-// Models (Postgres tables init)
+// Models
 const User = require('./models/User');
 const Restaurant = require('./models/Restaurant');
 
@@ -26,19 +26,14 @@ app.use(express.json());
 
 
 // DB init
-(async () => {
-  await User.createTable();
-  await Restaurant.createTable();
-})();
-
-//connectMongoDB();
+connectMongoDB();
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/restaurants', restaurantRoutes);
 app.use('/api/users', userRoutes);
-//app.use('/api/challenges', challengeRoutes);
-//app.use('/api/squads', squadRoutes);
+app.use('/api/challenges', challengeRoutes);
+app.use('/api/squads', squadRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

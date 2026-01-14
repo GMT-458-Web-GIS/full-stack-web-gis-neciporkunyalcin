@@ -23,7 +23,7 @@ const challengeSchema = new mongoose.Schema({
   requirements: {
     visit_count: Number,
     cuisine_types: [String],
-    specific_restaurants: [Number],
+    specific_restaurants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' }],
     time_constraint: {
       type: String,
       enum: ['daily', 'weekly', 'monthly', 'custom']
@@ -55,7 +55,8 @@ const challengeSchema = new mongoose.Schema({
   },
   participants: [{
     user_id: {
-      type: Number,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: true
     },
     username: String,
@@ -67,7 +68,7 @@ const challengeSchema = new mongoose.Schema({
       total: Number
     },
     visited_locations: [{
-      restaurant_id: Number,
+      restaurant_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant' },
       restaurant_name: String,
       visited_at: Date
     }],
@@ -82,7 +83,7 @@ const challengeSchema = new mongoose.Schema({
     }
   }],
   created_by: {
-    user_id: Number,
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     username: String
   },
   community_stats: {

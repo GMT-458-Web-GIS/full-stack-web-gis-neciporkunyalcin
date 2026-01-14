@@ -2,12 +2,14 @@ const mongoose = require('mongoose');
 
 const reviewSchema = new mongoose.Schema({
   restaurant_id: {
-    type: Number,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Restaurant',
     required: true,
     index: true
   },
   user_id: {
-    type: Number,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
     index: true
   },
@@ -31,18 +33,19 @@ const reviewSchema = new mongoose.Schema({
   }],
   tags: [{
     type: String,
-    enum: ['spicy', 'vegan', 'halal', 'cozy', 'romantic', 'family-friendly', 
-           'quiet', 'lively', 'authentic', 'fast-service', 'budget-friendly']
+    enum: ['spicy', 'vegan', 'halal', 'cozy', 'romantic', 'family-friendly',
+      'quiet', 'lively', 'authentic', 'fast-service', 'budget-friendly']
   }],
   likes: {
     type: Number,
     default: 0
   },
   liked_by: [{
-    type: Number // user IDs
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   }],
   comments: [{
-    user_id: Number,
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     username: String,
     text: String,
     created_at: {

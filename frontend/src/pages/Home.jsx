@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import MapView from "../components/MapView";
 import Leaderboard from "../components/Leaderboard";
+import Challenges from "../components/Challenges";
+import FoodSquad from "../components/FoodSquad";
 import api from "../services/api";
 
 export default function Home({ user }) {
@@ -43,60 +45,50 @@ export default function Home({ user }) {
 
   return (
     <div className="content">
-      <div className="card">
-        <div className="cardhd">
-          <h3>MAP</h3>
-          <div style={{ display: "flex", gap: 10 }}>
-            <button className="btn" onClick={locate}>Use my location</button>
-            <button className="btn" onClick={nearby}>Nearby (2.5km)</button>
-            <button className="btn" onClick={loadAll}>All</button>
+      {/* Main Column: Map */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', minWidth: 0 }}>
+        <div className="card" style={{ flex: 1, minHeight: 600 }}>
+          <div className="cardhd">
+            <h3>Explore Map</h3>
+            <div className="row">
+              <button className="btn" onClick={locate} title="Use my location">📍 Me</button>
+              <button className="btn" onClick={nearby}>Nearby</button>
+              <button className="btn primary" onClick={loadAll}>Global</button>
+            </div>
           </div>
-        </div>
-        <div className="cardbd">
-          {msg && <div className="small" style={{ color: "#fca5a5" }}>{msg}</div>}
-          <div className="small" style={{ marginBottom: 10 }}>
-            Center: {center.lat.toFixed(5)}, {center.lon.toFixed(5)}
-            <span className="tag">OSM tiles</span>
-            <span className="tag">{restaurants.length} results</span>
-          </div>
+          <div className="cardbd" style={{ flex: 1, padding: 0, position: 'relative' }}>
+            {msg && (
+              <div
+                style={{
+                  position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+                  zIndex: 999, background: '#fee2e2', padding: '0.5rem 1rem',
+                  borderRadius: '2rem', color: '#b91c1c', fontSize: 13, fontWeight: 500,
+                  boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)'
+                }}
+              >
+                {msg}
+              </div>
+            )}
 
-          <MapView
-            center={center}
-            restaurants={restaurants}
-            canCreate={!!user}
-            onCreated={loadAll}
-          />
+            <div style={{ position: 'absolute', bottom: 12, left: 12, zIndex: 500, background: 'rgba(255,255,255,0.9)', padding: '4px 8px', borderRadius: 6, fontSize: 12 }}>
+              Center: {center.lat.toFixed(5)}, {center.lon.toFixed(5)} • {restaurants.length} places
+            </div>
+
+            <MapView
+              center={center}
+              restaurants={restaurants}
+              canCreate={!!user}
+              onCreated={loadAll}
+            />
+          </div>
         </div>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      {/* Side Column: Widgets */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
         <Leaderboard />
-
-        <div className="card">
-          <div className="cardhd">
-            <h3>CHALLENGES</h3>
-            <span className="small">Coming soon (Mongo disabled)</span>
-          </div>
-          <div className="cardbd">
-            <div className="small">
-              Challenges şu an kapalı çünkü MongoDB’yi devre dışı bıraktık.
-              İstersen bunu profesyonel “empty state” olarak bırakırız.
-            </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="cardhd">
-            <h3>FOOD SQUAD</h3>
-            <span className="small">Coming soon (Mongo disabled)</span>
-          </div>
-          <div className="cardbd">
-            <div className="small">
-              Squad kısmı Mongo ile çalışıyor. Atlas IP whitelist vs uğraşmamak için şimdilik kapalı.
-              Sonra tek tıkla açacağız.
-            </div>
-          </div>
-        </div>
+        <Challenges />
+        <FoodSquad user={user} />
       </div>
     </div>
   );
