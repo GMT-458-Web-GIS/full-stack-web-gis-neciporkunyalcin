@@ -1,4 +1,4 @@
-# Nerede Yesek? - Social Food Map 🥙
+# Nerede Yesek? - Social Food Map 
 
 **GMT 458 Web GIS Final Project**
 
@@ -6,7 +6,7 @@ An interactive social food map application that helps users discover restaurants
 
 ---
 
-## 📋 Assignment Requirements Implementation Report
+##  Assignment Requirements Implementation Report
 
 This project implements the following "Mix and Match" options from the final assignment provisions:
 
@@ -19,7 +19,7 @@ This project implements the following "Mix and Match" options from the final ass
 | **API Development** | **25%** | **Implemented.** RESTful API exposing spatial resources (Restaurants) and non-spatial resources (User profiles, Squads). |
 | **CRUD Operations** | **15%** | **Implemented.** Complete CRUD cycle: **Create** (add restaurants), **Read** (view map/nearby), **Update** (edit restaurant/user location), and **Delete** (remove restaurants). |
 
-### 🛠 Technical Report
+###  Technical Report
 
 #### 1. Managing Different User Types
 The application is designed to handle different tiers of users, stored in the `user_type` field of the User model.
@@ -40,7 +40,7 @@ To ensure the map stays responsive even with thousands of points, we utilized Mo
 
 ---
 
-## 🚀 Features
+##  Features
 
 -   **Interactive Map:** Visualizes restaurants using Leaflet.js with custom markers.
 -   **Geospatial Search:** "Find Nearby" feature calculates distances on the server-side.
@@ -50,13 +50,13 @@ To ensure the map stays responsive even with thousands of points, we utilized Mo
 -   **Review System:** Rate and review restaurants (1-5 Stars). Real-time average rating updates.
 -   **Notification System:** Real-time alerts for squad invites and updates.
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 -   **Backend:** Node.js, Express.js, MongoDB (Mongoose), JWT.
 -   **Frontend:** React, React-Leaflet, TailwindCSS (for styling).
 -   **Geospatial:** GeoJSON, OpenStreetMap (Nominatim).
 
-## 📦 Installation & Setup
+##  Installation & Setup
 
 ### Prerequisites
 -   Node.js (v14+)
@@ -92,7 +92,7 @@ npm start
 
 Access the application at [http://localhost:3000](http://localhost:3000).
 
-## 📍 API Reference
+##  API Reference
 
 ### Auth
 - `POST /api/auth/register` - New user registration
