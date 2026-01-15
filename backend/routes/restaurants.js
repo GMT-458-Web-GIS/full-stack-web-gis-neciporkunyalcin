@@ -7,13 +7,17 @@ const {
   getRestaurant,
   createRestaurant,
   searchRestaurants,
-  checkIn
+  checkIn,
+  updateRestaurant,
+  deleteRestaurant
 } = require('../controllers/restaurantController');
 
 router.get('/', getAllRestaurants);
 router.get('/nearby', getNearbyRestaurants);
 router.get('/search', searchRestaurants);
 router.get('/:id', getRestaurant);
+router.put('/:id', auth, updateRestaurant);
+router.delete('/:id', auth, deleteRestaurant);
 
 router.post('/', auth, createRestaurant);
 router.post('/checkin', auth, checkIn);

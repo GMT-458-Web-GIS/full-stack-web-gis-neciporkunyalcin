@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const User = require('../models/User');
+const { updateLocation } = require('../controllers/userController');
 
 router.get('/me', auth, async (req, res) => {
   res.status(200).json({
@@ -9,6 +10,8 @@ router.get('/me', auth, async (req, res) => {
     data: req.user
   });
 });
+
+router.put('/location', auth, updateLocation);
 
 router.get('/leaderboard', async (req, res) => {
   try {

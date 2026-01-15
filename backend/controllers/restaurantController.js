@@ -217,6 +217,83 @@ exports.searchRestaurants = async (req, res) => {
   }
 };
 
+// Update restaurant
+exports.updateRestaurant = async (req, res) => {
+  try {
+    const { name, cuisine_type, price_range, address, phone } = req.body;
+
+    let restaurant = await Restaurant.findById(req.params.id);
+
+    if (!restaurant) {
+      return res.status(404).json({
+        success: false,
+        message: 'Restaurant not found'
+      });
+    }
+
+    // Make sure user is restaurant owner
+    if (restaurant.owner.toString() !== req.user.id && req.user.user_type !== 'admin') {
+      return res.status(401).json({
+        success: false,
+        message: 'Not authorized to update this restaurant'
+      });
+    }
+
+    restaurant = await Restaurant.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true
+    });
+
+    res.status(200).json({
+      success: true,
+      data: restaurant
+    });
+  } catch (error) {
+    console.error('Error in updateRestaurant:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+};
+
+// Delete restaurant
+exports.deleteRestaurant = async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findById(req.params.id);
+
+    if (!restaurant) {
+      return res.status(404).json({
+        success: false,
+        message: 'Restaurant not found'
+      });
+    }
+
+    // Make sure user is restaurant owner
+    if (restaurant.owner.toString() !== req.user.id && req.user.user_type !== 'admin') {
+      return res.status(401).json({
+        success: false,
+        message: 'Not authorized to delete this restaurant'
+      });
+    }
+
+    await restaurant.deleteOne();
+
+    res.status(200).json({
+      success: true,
+      message: 'Restaurant removed'
+    });
+  } catch (error) {
+    console.error('Error in deleteRestaurant:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+};
+
 // Check-in to restaurant (award XP)
 exports.checkIn = async (req, res) => {
   try {
