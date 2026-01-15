@@ -88,7 +88,7 @@ npm install
 npm start
 ```
 
-Access the application at `http://localhost:3000`.
+Access the application at [http://localhost:3000](http://localhost:3000).
 
 ## 📍 API Reference
 
