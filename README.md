@@ -1,10 +1,10 @@
-# Nerede Yesek? - Social Food Map 🥙
+# Nerede Yesek? - Social Food Map
 
 **GMT 458 Web GIS Final Project**
 
 An interactive social food map application that helps users discover restaurants in Ankara, check-in to earn XP, and make group dining decisions with friends.
 
-## 🚀 What's New?
+## What's New?
 
 -   **Full MongoDB Migration:** The entire database layer has been migrated from PostgreSQL to MongoDB for better scalability and flexibility.
 -   **Modern UI/UX:** A completely redesigned interface with a glassmorphism aesthetic, dark mode inspired themes, and smooth animations.
@@ -14,7 +14,7 @@ An interactive social food map application that helps users discover restaurants
     -   **Challenges:** Participate in seasonal food challenges.
     -   **Leaderboard:** Compete with other foodies for the top spot.
 
-## ✨ Features
+## Features
 
 -   **Interactive Map:** Explore restaurants, filter by cuisine/price, and find spots nearby using geospatial queries.
 -   **Gamification:** Earn XP by checking in and adding new spots. Level up and unlock badges.
@@ -23,7 +23,7 @@ An interactive social food map application that helps users discover restaurants
     -   **Voting:** Democratically decide on the next meal location.
 -   **Responsive Design:** Works seamlessly on desktop and mobile.
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 **Backend:**
 -   **Node.js & Express:** RESTful API server.
@@ -36,7 +36,7 @@ An interactive social food map application that helps users discover restaurants
 -   **OpenStreetMap (Nominatim):** Map tiles and reverse geocoding.
 -   **CSS Variables:** Modern and consistent styling system.
 
-## 📦 Installation
+## Installation
 
 ### Prerequisites
 -   Node.js (v14+)
@@ -69,7 +69,7 @@ npm start
 -   **Frontend:** http://localhost:3000
 -   **Backend API:** http://localhost:5000
 
-## 📍 API Overview
+## API Overview
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
@@ -80,7 +80,7 @@ npm start
 | `POST` | `/api/squads` | Create a new food squad |
 | `GET` | `/api/users/leaderboard` | Get top users |
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 nerede-yesek/
