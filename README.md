@@ -10,14 +10,14 @@ An interactive social food map application that helps users discover restaurants
 
 This project implements the following "Mix and Match" options from the final assignment provisions:
 
-| Requirement Feature | Weight | Implementation Details |
-| :--- | :--- | :--- |
-| **Authentication** | **15%** | **Implemented.** Users sign up and login using JWT (JSON Web Tokens) and secure password hashing with Bcrypt. |
-| **Managing User Types** | **20%** | **Implemented.** The system supports multiple user roles defined in `User.js`: `free`, `premium`, `restaurant_owner`, and `admin`. |
-| **NoSQL Database** | **25%** | **Implemented.** The project uses **MongoDB** instead of a relational database to handle heterogeneous restaurant data and flexible GeoJSON schemas. |
-| **Performance Monitoring** | **25%** | **Implemented.** Utilization of **Spatial Indices (`2dsphere`)** for optimized geospatial queries and regular indices for sorting by rating. |
-| **API Development** | **25%** | **Implemented.** RESTful API exposing spatial resources (Restaurants) and non-spatial resources (User profiles, Squads). |
-| **CRUD Operations** | **15%** | **Implemented.** Complete CRUD cycle: **Create** (add restaurants), **Read** (view map/nearby), **Update** (edit restaurant/user location), and **Delete** (remove restaurants). |
+| Requirement Feature | Implementation Details |
+| :--- | :--- |
+| **Authentication**| **Implemented.** Users sign up and login using JWT (JSON Web Tokens) and secure password hashing with Bcrypt. |
+| **Managing User Types**| **Implemented.** The system supports multiple user roles defined in `User.js`: `free`, `premium`, `restaurant_owner`, and `admin`. |
+| **NoSQL Database**| **Implemented.** The project uses **MongoDB** instead of a relational database to handle heterogeneous restaurant data and flexible GeoJSON schemas. |
+| **Performance Monitoring** | **Implemented.** Utilization of **Spatial Indices (`2dsphere`)** for optimized geospatial queries and regular indices for sorting by rating. |
+| **API Development**| **Implemented.** RESTful API exposing spatial resources (Restaurants) and non-spatial resources (User profiles, Squads). |
+| **CRUD Operations**| **Implemented.** Complete CRUD cycle: **Create** (add restaurants), **Read** (view map/nearby), **Update** (edit restaurant/user location), and **Delete** (remove restaurants). |
 
 ###  Technical Report
 
