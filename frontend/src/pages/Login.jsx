@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../services/api";
+import api, { setAuthToken } from "../services/api";
 import { saveSession } from "../services/auth";
 
 export default function Login({ onLogin }) {
@@ -19,12 +19,14 @@ export default function Login({ onLogin }) {
         const r = await api.post("/auth/register", { username, email, password });
         const { token, data } = r.data;
         saveSession(token, data);
+        setAuthToken(token); // Set token in axios
         onLogin(data);
         navigate("/");
       } else {
         const r = await api.post("/auth/login", { email, password });
         const { token, data } = r.data;
         saveSession(token, data);
+        setAuthToken(token); // Set token in axios
         onLogin(data);
         navigate("/");
       }

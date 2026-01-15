@@ -13,6 +13,8 @@ const restaurantRoutes = require('./routes/restaurants');
 const userRoutes = require('./routes/users');
 const challengeRoutes = require('./routes/challenges');
 const squadRoutes = require('./routes/squads');
+const pollRoutes = require('./routes/polls');
+const notificationRoutes = require('./routes/notifications');
 
 // Models
 const User = require('./models/User');
@@ -34,6 +36,8 @@ app.use('/api/restaurants', restaurantRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/challenges', challengeRoutes);
 app.use('/api/squads', squadRoutes);
+app.use('/api/polls', pollRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

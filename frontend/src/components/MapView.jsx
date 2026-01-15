@@ -26,6 +26,7 @@ export default function MapView({ center, restaurants, canCreate, onCreated }) {
   const [form, setForm] = useState({
     name: "",
     cuisine_type: "",
+    cuisineTypes: [],
     price_range: "",
     address: "",
     phone: "",
@@ -93,7 +94,22 @@ export default function MapView({ center, restaurants, canCreate, onCreated }) {
                   {r.cuisine_type || "Unknown"} • {r.price_range || "-"} • ⭐ {r.rating ?? 0}
                 </div>
                 <div className="small">{r.address || ""}</div>
-                <div style={{ marginTop: 8, fontSize: 11, color: '#94a3b8' }}>Check-in to earn XP</div>
+                <div style={{ marginTop: 8, display: 'flex', gap: 8 }}>
+                  <button className="btn" style={{ fontSize: 10, padding: '2px 6px' }} onClick={async () => {
+                    const rating = prompt('Rate 1-5:');
+                    if (!rating) return;
+                    if (rating < 1 || rating > 5) return alert('1-5 only');
+                    const comment = prompt('Comment (optional):');
+                    try {
+                      await api.post(`/restaurants/${r.id}/reviews`, { rating: parseInt(rating), comment });
+                      alert('Review added!');
+                      onCreated?.(); // Refresh map data
+                    } catch (e) {
+                      alert('Error adding review');
+                    }
+                  }}>⭐ Rate</button>
+                  <span style={{ fontSize: 11, color: '#94a3b8' }}>Check-in to earn XP</span>
+                </div>
               </div>
             </Popup>
           </Marker>
@@ -142,8 +158,24 @@ export default function MapView({ center, restaurants, canCreate, onCreated }) {
 
               <div className="row">
                 <div style={{ flex: 1 }}>
-                  <label className="small" style={{ fontWeight: 600 }}>Cuisine</label>
-                  <input className="input" placeholder="Pizza" value={form.cuisine_type} onChange={(e) => setForm({ ...form, cuisine_type: e.target.value })} />
+                  <label className="small" style={{ fontWeight: 600 }}>Cuisines</label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, maxHeight: 80, overflowY: 'auto', border: '1px solid #e2e8f0', padding: 4 }}>
+                    {['Kebap', 'Burger', 'Pizza', 'Sushi', 'Pasta', 'Dessert', 'Vegan', 'Chinese'].map(c => (
+                      <label key={c} style={{ fontSize: 11, display: 'flex', alignItems: 'center', gap: 4, background: '#f1f5f9', padding: '2px 6px', borderRadius: 4, cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={form.cuisineTypes?.includes(c)}
+                          onChange={(e) => {
+                            const newTypes = e.target.checked
+                              ? [...(form.cuisineTypes || []), c]
+                              : (form.cuisineTypes || []).filter(t => t !== c);
+                            setForm({ ...form, cuisineTypes: newTypes, cuisine_type: newTypes[0] || '' });
+                          }}
+                        />
+                        {c}
+                      </label>
+                    ))}
+                  </div>
                 </div>
                 <div style={{ width: 120 }}>
                   <label className="small" style={{ fontWeight: 600 }}>Price (TL)</label>

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
+import Polls from "./Polls";
 
-export default function FoodSquad({ user }) {
+export default function FoodSquad({ user, onMapFocus }) {
   const [name, setName] = useState("");
   const [coords, setCoords] = useState({ lat: 39.92077, lon: 32.85411 });
   const [mySquads, setMySquads] = useState([]);
+  const [selectedSquad, setSelectedSquad] = useState(null);
   const [msg, setMsg] = useState("");
 
   const locate = () => {
@@ -44,6 +46,89 @@ export default function FoodSquad({ user }) {
       setMsg(e?.response?.data?.message || "Create squad failed (login?)");
     }
   };
+
+  if (selectedSquad) {
+    return (
+      <div className="card">
+        <div className="cardhd" style={{ justifyContent: 'flex-start', gap: 10 }}>
+          <button className="btn" onClick={() => setSelectedSquad(null)}>← Back</button>
+          <h3>{selectedSquad.name}</h3>
+        </div>
+        <div className="cardbd">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div>
+              <span className="tag" style={{ textTransform: 'uppercase', fontSize: 10, letterSpacing: 0.5 }}>{selectedSquad.squad_type}</span>
+            </div>
+            <div className="small" style={{ color: '#64748b' }}>
+              Created by you
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 20 }}>
+            <label className="small" style={{ fontWeight: 700, color: '#475569', display: 'block', marginBottom: 8, textTransform: 'uppercase', fontSize: 11 }}>
+              Squad Members ({selectedSquad.members?.length})
+            </label>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {selectedSquad.members?.map((m) => (
+                <div key={m.user_id} title={m.username} style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  background: '#f8fafc', border: '1px solid #e2e8f0',
+                  padding: '4px 10px 4px 4px', borderRadius: 20
+                }}>
+                  <div style={{
+                    width: 24, height: 24, borderRadius: '50%', background: '#3b82f6', color: 'white',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700
+                  }}>
+                    {m.username[0].toUpperCase()}
+                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: '#334155' }}>{m.username}</span>
+                </div>
+              ))}
+
+              {/* Add Member Button - triggers focus on input below */}
+              <button
+                onClick={() => document.getElementById('inviteUser').focus()}
+                style={{
+                  width: 32, height: 32, borderRadius: '50%', border: '1px dashed #cbd5e1',
+                  background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8'
+                }}
+                title="Add member"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <Polls squadId={selectedSquad._id} currentUser={user} onMapFocus={onMapFocus} />
+
+          <div style={{ marginTop: 24, background: '#f8fafc', padding: 12, borderRadius: 12, border: '1px solid #e2e8f0' }}>
+            <label className="small" style={{ fontWeight: 700, color: '#334155', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span>✉️</span> Invite New Member
+            </label>
+            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+              <input
+                className="input"
+                placeholder="Enter username to invite..."
+                id="inviteUser"
+                style={{ background: 'white', flex: 1 }}
+              />
+              <button className="btn primary" onClick={async () => {
+                const u = document.getElementById('inviteUser').value;
+                if (!u) return alert('Enter username');
+                try {
+                  await api.post(`/squads/${selectedSquad._id}/invite`, { username: u });
+                  alert('Invite sent!');
+                  document.getElementById('inviteUser').value = '';
+                } catch (e) {
+                  alert(e.response?.data?.message || 'Error sending invite');
+                }
+              }}>Send Invite</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="card">
@@ -86,7 +171,10 @@ export default function FoodSquad({ user }) {
                   <div style={{ fontWeight: 600, fontSize: 14 }}>{s.name}</div>
                   <div className="small" style={{ fontSize: 11 }}>{s.squad_type}</div>
                 </div>
-                <div className="tag">{s.members?.length || 0} members</div>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <div className="tag">{s.members?.length || 0} members</div>
+                  <button className="btn" style={{ fontSize: 11, padding: '2px 8px' }} onClick={() => setSelectedSquad(s)}>Open</button>
+                </div>
               </div>
             ))}
           </div>

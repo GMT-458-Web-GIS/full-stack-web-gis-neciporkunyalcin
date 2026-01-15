@@ -9,7 +9,9 @@ const {
   searchRestaurants,
   checkIn,
   updateRestaurant,
-  deleteRestaurant
+  deleteRestaurant,
+  addReview,
+  getReviews
 } = require('../controllers/restaurantController');
 
 router.get('/', getAllRestaurants);
@@ -21,5 +23,7 @@ router.delete('/:id', auth, deleteRestaurant);
 
 router.post('/', auth, createRestaurant);
 router.post('/checkin', auth, checkIn);
+router.post('/:id/reviews', auth, addReview);
+router.get('/:id/reviews', getReviews);
 
 module.exports = router;

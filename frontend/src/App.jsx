@@ -10,6 +10,8 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 
+import Notifications from "./components/Notifications";
+
 function Shell({ user, onLogout, onSearch, onLogin }) {
   const nav = useNavigate();
   const [q, setQ] = useState("");
@@ -105,6 +107,7 @@ function Shell({ user, onLogout, onSearch, onLogin }) {
             {!user && (
               <button className="btn primary" style={{ marginLeft: 8 }} onClick={() => nav("/login")}>Login</button>
             )}
+            {user && <Notifications />}
           </div>
         </div>
 

@@ -12,6 +12,11 @@ const RestaurantSchema = new mongoose.Schema({
     required: false,
     maxlength: 50
   },
+  cuisineTypes: {
+    type: [String],
+    default: [],
+    index: true
+  },
   price_range: {
     type: String,
     required: false,

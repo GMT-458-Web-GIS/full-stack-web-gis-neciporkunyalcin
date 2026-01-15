@@ -1,6 +1,46 @@
 const Squad = require('../models/Squad');
 const Restaurant = require('../models/Restaurant');
 const User = require('../models/User');
+const Notification = require('../models/Notification');
+
+// Invite member to squad
+exports.inviteMember = async (req, res) => {
+  try {
+    const { username } = req.body;
+    const squadId = req.params.id;
+
+    if (!username) return res.status(400).json({ success: false, message: 'Username is required' });
+
+    const squad = await Squad.findById(squadId);
+    if (!squad) return res.status(404).json({ success: false, message: 'Squad not found' });
+
+    const userToInvite = await User.findOne({ username });
+    if (!userToInvite) return res.status(404).json({ success: false, message: 'User not found' });
+
+    if (squad.members.some(m => m.user_id.toString() === userToInvite._id.toString())) {
+      return res.status(400).json({ success: false, message: 'User already in squad' });
+    }
+
+    // Create Notification
+    const notif = await Notification.create({
+      recipient: userToInvite._id,
+      type: 'squad_invite',
+      data: {
+        squadId: squad._id,
+        squadName: squad.name,
+        senderId: req.user.id,
+        senderName: req.user.username
+      }
+    });
+    console.log('Notification created for:', userToInvite.username, 'ID:', userToInvite._id, 'NotifID:', notif._id);
+
+    res.status(200).json({ success: true, message: `Invite sent to ${username}` });
+
+  } catch (error) {
+    console.error('Error in inviteMember:', error);
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
+};
 
 // Create squad
 exports.createSquad = async (req, res) => {
@@ -68,6 +108,59 @@ exports.getUserSquads = async (req, res) => {
   }
 };
 
+// Add member to squad
+exports.addMember = async (req, res) => {
+  try {
+    const { username } = req.body;
+
+    if (!username) {
+      return res.status(400).json({ success: false, message: 'Username is required' });
+    }
+
+    const squad = await Squad.findById(req.params.id);
+    if (!squad) {
+      return res.status(404).json({ success: false, message: 'Squad not found' });
+    }
+
+    // Check if user exists
+    const userToAdd = await User.findOne({ username });
+    if (!userToAdd) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Check if already member
+    if (squad.members.some(m => m.user_id.toString() === userToAdd._id.toString())) {
+      return res.status(400).json({ success: false, message: 'User already in squad' });
+    }
+
+    // Add to squad
+    squad.members.push({
+      user_id: userToAdd._id,
+      username: userToAdd.username,
+      current_location: {
+        type: 'Point',
+        coordinates: userToAdd.location?.coordinates || [32.8597, 39.9334] // Default Ankara if no loc
+      }
+    });
+
+    await squad.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Member added successfully',
+      data: squad
+    });
+
+  } catch (error) {
+    console.error('Error in addMember:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
+    });
+  }
+};
+
 // Get squad by ID
 exports.getSquad = async (req, res) => {
   try {
@@ -108,10 +201,10 @@ exports.startSession = async (req, res) => {
 
     // Calculate common filters from all members' preferences
     const preferences = squad.members.map(m => m.preferences);
-    
+
     let minBudget = Math.min(...preferences.map(p => p.budget_min || 0));
     let maxBudget = Math.max(...preferences.map(p => p.budget_max || 1000));
-    
+
     // Find centroid of all member locations
     const lons = squad.members.map(m => m.current_location.coordinates[0]);
     const lats = squad.members.map(m => m.current_location.coordinates[1]);
@@ -222,7 +315,7 @@ exports.vote = async (req, res) => {
 
     // Add new vote
     const voteData = { user_id: req.user.id, timestamp: new Date() };
-    
+
     if (vote_type === 'upvote') {
       restaurant.votes.upvotes.push(voteData);
       restaurant.total_score = restaurant.votes.upvotes.length * 2 - restaurant.votes.downvotes.length + restaurant.votes.super_likes.length * 3;
@@ -281,7 +374,7 @@ exports.finalizeDecision = async (req, res) => {
 
     // Update stats
     squad.squad_stats.total_meetings += 1;
-    
+
     // Update favorite restaurant
     const existingFav = squad.squad_stats.favorite_restaurant;
     if (!existingFav || existingFav.restaurant_id === winner.restaurant_id) {

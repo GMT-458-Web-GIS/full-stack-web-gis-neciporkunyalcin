@@ -46,7 +46,9 @@ To ensure the map stays responsive even with thousands of points, we utilized Mo
 -   **Geospatial Search:** "Find Nearby" feature calculates distances on the server-side.
 -   **Gamification:** Users earn XP for check-ins and adding content.
     -   **Level System:** XP thresholds determine user levels.
--   **Social Squads:** Create temporary groups to vote on food locations.
+-   **Social Squads:** Create groups, **invite friends**, and vote on food types with **collaborative polling**.
+-   **Review System:** Rate and review restaurants (1-5 Stars). Real-time average rating updates.
+-   **Notification System:** Real-time alerts for squad invites and updates.
 
 ## 🛠️ Technology Stack
 
@@ -109,5 +111,14 @@ Access the application at [http://localhost:3000](http://localhost:3000).
 - `PUT /api/users/location` - Update user location
 - `GET /api/users/leaderboard` - Gamification leaderboard
 
----
-*Submitted by Necip Orkun Yalçın for Peer Review (Deadline: 14 January).*
+### Squads & Collaboration
+- `POST /api/squads` - Create a squad
+- `POST /api/squads/:id/invite` - **Invite member** (Notifications)
+- `POST /api/polls` - Create voting poll
+- `POST /api/polls/:id/vote` - Vote in a poll
+
+### Reviews
+- `POST /api/restaurants/:id/reviews` - Add rate & review
+- `GET /api/restaurants/:id/reviews` - Get recent reviews
+
+

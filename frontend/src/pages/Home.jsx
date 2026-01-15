@@ -88,7 +88,7 @@ export default function Home({ user }) {
       <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
         <Leaderboard />
         <Challenges />
-        <FoodSquad user={user} />
+        <FoodSquad user={user} onMapFocus={setCenter} />
       </div>
     </div>
   );

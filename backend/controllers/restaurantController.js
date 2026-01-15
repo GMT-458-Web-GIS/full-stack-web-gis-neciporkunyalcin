@@ -1,5 +1,6 @@
 const Restaurant = require('../models/Restaurant');
 const User = require('../models/User');
+const Review = require('../models/Review');
 
 // Get all restaurants
 exports.getAllRestaurants = async (req, res) => {
@@ -126,7 +127,7 @@ exports.getRestaurant = async (req, res) => {
 // Create restaurant
 exports.createRestaurant = async (req, res) => {
   try {
-    const { name, cuisine_type, price_range, lat, lon, address, phone } = req.body;
+    const { name, cuisine_type, cuisineTypes, price_range, lat, lon, address, phone } = req.body;
 
     // Validation
     if (!name || !lat || !lon) {
@@ -139,6 +140,7 @@ exports.createRestaurant = async (req, res) => {
     const restaurant = await Restaurant.create({
       name,
       cuisine_type,
+      cuisineTypes: cuisineTypes || [],
       price_range,
       location: {
         type: 'Point',
@@ -342,5 +344,59 @@ exports.checkIn = async (req, res) => {
       message: 'Server error',
       error: error.message
     });
+  }
+};
+
+// Add review
+exports.addReview = async (req, res) => {
+  try {
+    const { rating, comment } = req.body;
+    const restaurantId = req.params.id;
+
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ success: false, message: 'Rating must be between 1 and 5' });
+    }
+
+    const restaurant = await Restaurant.findById(restaurantId);
+    if (!restaurant) return res.status(404).json({ success: false, message: 'Restaurant not found' });
+
+    // Log attempt
+    const fs = require('fs');
+    fs.appendFileSync('c:\\Users\\Necip Orkun Yalçın\\Desktop\\nerede-yesek\\debug_output.txt', `[Review Attempt] User: ${req.user.id}, Rest: ${restaurantId}, Rating: ${rating}\n`);
+
+    // Create Review
+    await Review.create({
+      restaurant_id: restaurantId,
+      user_id: req.user.id,
+      username: req.user.username,
+      rating,
+      comment: comment || ''
+    });
+
+    // Update Restaurant Stats
+    const reviews = await Review.find({ restaurant_id: restaurantId });
+    const avg = reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length;
+
+    restaurant.rating = parseFloat(avg.toFixed(1));
+    restaurant.total_reviews = reviews.length;
+    await restaurant.save();
+
+    res.status(201).json({ success: true, message: 'Review added', data: restaurant });
+
+  } catch (error) {
+    const fs = require('fs');
+    fs.appendFileSync('c:\\Users\\Necip Orkun Yalçın\\Desktop\\nerede-yesek\\debug_output.txt', `[Review Error] ${error.message}\n`);
+    console.error('Error in addReview:', error);
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
+};
+
+// Get reviews
+exports.getReviews = async (req, res) => {
+  try {
+    const reviews = await Review.find({ restaurant_id: req.params.id }).sort({ createdAt: -1 }).limit(50);
+    res.status(200).json({ success: true, data: reviews });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 };
